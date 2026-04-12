@@ -15,11 +15,5 @@ Here are some ideas to get you started:
 - ⚡ Fun fact: ...
 -->
 
-<!-- CLOC-START -->
-cloc|github.com/AlDanial/cloc v 1.98  T=0.01 s (150.9 files/s, 2868.0 lines/s)
---- | ---
-
-Language|files|blank|comment|code
-:-------|-------:|-------:|-------:|-------:
-Markdown|1|4|14|1
---------|--------|--------|--------|--------
+[CLOC-START]
+[CLOC-END]
