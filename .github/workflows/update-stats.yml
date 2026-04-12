@@ -24,17 +24,15 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           mkdir temp_repos && cd temp_repos
-          
-          # Notice the fixed --visibility=public flag here!
           gh repo list urtworkmail --visibility=public --limit 100 --json url -q '.[].url' | xargs -n 1 git clone --depth 1
           cd ..
           
           cloc temp_repos --md --exclude-dir=.github > stats.md
           
-          # The new, crash-proof way to build the README
-          sed -n '1,//p' README.md > README.new
+          # Using plain text markers to prevent copy-paste bugs
+          sed -n '1,/\[CLOC-START\]/p' README.md > README.new
           cat stats.md >> README.new
-          sed -n '//,$p' README.md >> README.new
+          sed -n '/\[CLOC-END\]/,$p' README.md >> README.new
           
           mv README.new README.md
 
@@ -43,5 +41,5 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git add README.md
-          git commit -m "Update total lines across all repos (Fixed)" || exit 0
+          git commit -m "Update total lines across all repos (Fixed Markers)" || exit 0
           git push
