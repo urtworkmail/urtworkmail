@@ -1,2 +1,17 @@
-- name: Count Lines of Code (cloc)
-  uses: djdefi/cloc-action@6
+name: CLOC
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  cloc:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Count Lines of Code
+        uses: svenstaro/cloc-action@v2
+        with:
+          args: --output-format=json --out=cloc.json
+      # Note: Additional steps are needed to commit these stats to your README
