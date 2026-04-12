@@ -1,10 +1,11 @@
 name: Global Code Stats
 on:
   schedule:
-    - cron: '0 0 * * *'
-  workflow_dispatch:
+    - cron: '0 0 * * *' # Runs daily at midnight
+  workflow_dispatch:     # Allows you to run it manually
 
 env:
+  # This resolves the Node.js 20 deprecation warning
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
@@ -16,29 +17,29 @@ jobs:
       - name: Checkout Profile Repo
         uses: actions/checkout@v4
 
-      - name: Install cloc and gh cli
+      - name: Install cloc
         run: sudo apt-get install -y cloc
 
       - name: Fetch and Count All Repos
         env:
-          GH_TOKEN: ${{ github.token }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          mkdir all_repos && cd all_repos
-          # Fetch all your public repositories and clone them
-          gh repo list YOUR_GITHUB_USERNAME --public --limit 100 --json url -q '.[].url' | xargs -n 1 git clone --depth 1
+          mkdir temp_repos && cd temp_repos
+          # This command finds all your public repos and clones them (up to 100)
+          gh repo list urtworkmail --public --limit 100 --json url -q '.[].url' | xargs -n 1 git clone --depth 1
           cd ..
           
-          # Run cloc on the folder containing all cloned repos
-          STATS=$(cloc all_repos --md --exclude-dir=.github)
+          # Generate the statistics in Markdown format
+          cloc temp_repos --md --exclude-dir=.github > stats.md
           
-          # Inject stats into README
-          sed -i "/<!-- CLOC-START -->/,/<!-- CLOC-END -->/{ /<!-- CLOC-START -->/b; /<!-- CLOC-END -->/b; d; }" README.md
-          sed -i "/<!-- CLOC-START -->/a \\$STATS" README.md
+          # Clean up the markers in README.md and inject the new stats
+          sed -i '//,// { //n; //b; d }' README.md
+          sed -i '//r stats.md' README.md
 
       - name: Commit and Push
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git add README.md
-          git commit -m "Update total lines across all repos" || exit 0
+          git commit -m "Update total lines across all 24 repos" || exit 0
           git push
