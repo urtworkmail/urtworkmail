@@ -1,11 +1,10 @@
 name: Global Code Stats
 on:
   schedule:
-    - cron: '0 0 * * *' # Runs daily at midnight
-  workflow_dispatch:     # Allows you to run it manually
+    - cron: '0 0 * * *'
+  workflow_dispatch:
 
 env:
-  # This resolves the Node.js 20 deprecation warning
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
@@ -15,7 +14,7 @@ jobs:
       contents: write
     steps:
       - name: Checkout Profile Repo
-        uses: actions/checkout@v5 # Upgraded from v4 to v5
+        uses: actions/checkout@v5
 
       - name: Install cloc
         run: sudo apt-get install -y cloc
@@ -25,22 +24,18 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           mkdir temp_repos && cd temp_repos
-          # Fixed the deprecated --public flag to --visibility=public
+          
+          # Notice the fixed --visibility=public flag here!
           gh repo list urtworkmail --visibility=public --limit 100 --json url -q '.[].url' | xargs -n 1 git clone --depth 1
           cd ..
           
-          # Generate the statistics
           cloc temp_repos --md --exclude-dir=.github > stats.md
           
-          # A more robust way to update the README without sed errors:
-          # 1. Take everything from the start of README to the START marker
+          # The new, crash-proof way to build the README
           sed -n '1,//p' README.md > README.new
-          # 2. Add the new stats
           cat stats.md >> README.new
-          # 3. Add everything from the END marker to the end of the file
           sed -n '//,$p' README.md >> README.new
           
-          # Replace the old README with the new one
           mv README.new README.md
 
       - name: Commit and Push
@@ -48,5 +43,5 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git add README.md
-          git commit -m "Update total lines across all 24 repos" || exit 0
+          git commit -m "Update total lines across all repos (Fixed)" || exit 0
           git push
