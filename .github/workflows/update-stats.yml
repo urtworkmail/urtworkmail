@@ -25,16 +25,23 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           mkdir temp_repos && cd temp_repos
-          # This command finds all your public repos and clones them (up to 100)
-          gh repo list urtworkmail --public --limit 100 --json url -q '.[].url' | xargs -n 1 git clone --depth 1
+          # Fixed the deprecated --public flag to --visibility=public
+          gh repo list urtworkmail --visibility=public --limit 100 --json url -q '.[].url' | xargs -n 1 git clone --depth 1
           cd ..
           
-          # Generate the statistics in Markdown format
+          # Generate the statistics
           cloc temp_repos --md --exclude-dir=.github > stats.md
           
-          # Clean up the markers in README.md and inject the new stats
-          sed -i '//,// { //n; //b; d }' README.md
-          sed -i '//r stats.md' README.md
+          # A more robust way to update the README without sed errors:
+          # 1. Take everything from the start of README to the START marker
+          sed -n '1,//p' README.md > README.new
+          # 2. Add the new stats
+          cat stats.md >> README.new
+          # 3. Add everything from the END marker to the end of the file
+          sed -n '//,$p' README.md >> README.new
+          
+          # Replace the old README with the new one
+          mv README.new README.md
 
       - name: Commit and Push
         run: |
