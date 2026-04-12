@@ -15,7 +15,7 @@ jobs:
       contents: write
     steps:
       - name: Checkout Profile Repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5 # Upgraded from v4 to v5
 
       - name: Install cloc
         run: sudo apt-get install -y cloc
