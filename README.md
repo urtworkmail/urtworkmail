@@ -196,3 +196,15 @@ We are headquartered in Islamabad. Our infrastructure defaults to in-country dat
 *Enterprise inquiries: [hello@silicatelabs.io](mailto:hello@silicatelabs.io)*
 
 </div>
+cloc|github.com/AlDanial/cloc v 1.98  T=0.02 s (584.5 files/s, 242141.3 lines/s)
+--- | ---
+
+Language|files|blank|comment|code
+:-------|-------:|-------:|-------:|-------:
+HTML|4|427|59|4194
+Markdown|7|236|0|444
+JavaScript|1|40|44|166
+Python|1|15|7|67
+SQL|1|13|40|48
+--------|--------|--------|--------|--------
+SUM:|14|731|150|4919
